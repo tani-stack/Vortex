@@ -1,0 +1,7 @@
+[package]
+name = "aero-services"
+version.workspace = true
+edition.workspace = true
+[dependencies]
+aero-types = { path = "../libs/aero-types" }
+aero-drivers = { path = "../drivers" }

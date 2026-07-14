@@ -1,0 +1,8 @@
+[package]
+name = "aero-drivers"
+version.workspace = true
+edition.workspace = true
+[dependencies]
+aero-types = { path = "../libs/aero-types" }
+aero-abi = { path = "../libs/aero-abi" }
+bitflags = "2.4"

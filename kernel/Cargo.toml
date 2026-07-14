@@ -1,0 +1,11 @@
+[package]
+name = "aero-kernel"
+version.workspace = true
+edition.workspace = true
+[dependencies]
+linked_list_allocator = "0.10"
+x86_64 = { version = "0.17", optional = true }
+aarch64-cpu = "9.0"
+spin = "0.9"
+aero-types = { path = "../libs/aero-types" }
+aero-abi = { path = "../libs/aero-abi" }

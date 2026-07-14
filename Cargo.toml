@@ -1,0 +1,20 @@
+[workspace]
+members = ["boot", "kernel", "drivers", "services", "runtime", "libs/aero-abi", "libs/aero-types"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0-alpha"
+edition = "2021"
+license = "Proprietary"
+authors = ["AERO-RUST Core <core@aero.internal>"]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = "fat"
+codegen-units = 1
+opt-level = "z"
+overflow-checks = true
+strip = true

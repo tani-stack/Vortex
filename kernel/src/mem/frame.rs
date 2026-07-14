@@ -1,0 +1,1 @@
+pub struct FrameAllocator { next: usize } impl FrameAllocator { pub const fn new() -> Self { Self{next:0x4000_0000} } pub fn alloc(&mut self) -> Option<usize> { let f=self.next; self.next+=4096; Some(f) } }

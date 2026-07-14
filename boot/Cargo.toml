@@ -1,0 +1,6 @@
+[package]
+name = "aero-boot"
+version.workspace = true
+edition.workspace = true
+[dependencies]
+aero-types = { path = "../libs/aero-types" }

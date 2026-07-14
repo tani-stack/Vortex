@@ -1,0 +1,11 @@
+name: SecureBoot Sign
+on: [release]
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: GPG Verify + Cosign
+        run: |
+          echo "Verifying TPM manifest signature..."
+          cosign verify-blob --key cosign.pub --signature manifest.sig manifest.json

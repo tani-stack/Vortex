@@ -1,0 +1,6 @@
+[build]
+target = "aarch64-unknown-none"
+rustflags = ["-Z", "build-std=core,alloc"]
+
+[unstable]
+build-std = ["core", "alloc"]

@@ -1,0 +1,6 @@
+[package]
+name = "aero-runtime"
+version.workspace = true
+edition.workspace = true
+[dependencies]
+aero-types = { path = "../libs/aero-types" }
