@@ -1,2 +1,5 @@
-[package] name="aero-types" version.workspace=true edition.workspace=true
+[package] 
+name="aero-types" 
+version.workspace=true 
+edition.workspace=true
 [dependencies]
