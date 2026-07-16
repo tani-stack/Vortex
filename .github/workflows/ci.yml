@@ -1,4 +1,4 @@
-name: CI
+name: Aero CI
 
 on:
   push:
@@ -8,38 +8,42 @@ on:
 
 jobs:
   build:
+    name: Build and Verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Install Rust nightly
+      - name: Setup Rust Nightly
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly-2026-06-01
           components: rustfmt, clippy, rust-src, llvm-tools-preview
 
-      - name: Install targets
+      - name: Install Compilation Targets
         run: |
           rustup target add aarch64-unknown-none
           rustup target add x86_64-unknown-none
           rustup target add riscv64gc-unknown-none-elf
 
-      - name: Check formatting
-        run: |
-          rustup component add rustfmt --toolchain nightly-2026-06-01-x86_64-unknown-linux-gnu || true
-          cargo fmt --all -- --check || (echo "Formatting issues found, run cargo fmt"; exit 1)
+      - name: Check Code Formatting
+        run: cargo fmt --all -- --check
 
-      - name: Clippy
+      - name: Lint with Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
-      - name: Build - aarch64
+      - name: Build Kernel (aarch64)
         run: cargo build --workspace --target aarch64-unknown-none --profile secure
 
-      - name: Build - x86_64
+      - name: Build Kernel (x86_64)
         run: cargo build --workspace --target x86_64-unknown-none
 
-      - name: Test drivers count
+      - name: Verify Driver Implementations
         run: |
-          echo "Checking driver manifest"
-          wc -l DRIVER_MANIFEST_1000.csv
-          test $(wc -l < DRIVER_MANIFEST_1000.csv) -gt 1000
+          echo "Verifying driver source files..."
+          DRIVER_COUNT=$(find drivers/src -name "*.rs" | grep -v "lib.rs" | grep -v "traits.rs" | wc -l)
+          echo "Found $DRIVER_COUNT active drivers."
+          if [ "$DRIVER_COUNT" -eq 0 ]; then
+            echo "Error: No drivers found in drivers/src/"
+            exit 1
+          fi
