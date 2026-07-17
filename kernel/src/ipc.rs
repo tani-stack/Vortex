@@ -289,4 +289,4 @@ pub fn ipc_manager() -> &'static mut IpcManager {
     unsafe {
         IPC_MANAGER.as_mut().expect("IPC manager not initialized")
     }
-}
+}// High-speed inter-process communication
