@@ -54,7 +54,7 @@ pub fn init_all() -> AeroResult<()> {
 
 /// Get total number of available drivers
 pub fn driver_count() -> usize {
-    100+  // 100+ production-ready drivers
+    100  // 100+ production-ready drivers
 }
 
 /// List all available drivers
