@@ -1,7 +1,7 @@
 //! Advanced LiDAR Drivers
 //! Velodyne Ultra, Ouster, RobotSense, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 #[derive(Debug, Clone, Copy)]
 pub struct LidarPoint3D {
@@ -27,11 +27,11 @@ impl VelodyneUltra {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         Ok(())
     }
 
-    pub fn get_cloud(&self) -> AeroResult<Vec<LidarPoint3D>> {
+    pub fn get_cloud(&self) -> VortexResult<Vec<LidarPoint3D>> {
         Ok(Vec::new())
     }
 }
@@ -50,11 +50,11 @@ impl OusterOs1 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         Ok(())
     }
 
-    pub fn get_cloud(&self) -> AeroResult<Vec<LidarPoint3D>> {
+    pub fn get_cloud(&self) -> VortexResult<Vec<LidarPoint3D>> {
         Ok(Vec::new())
     }
 }
@@ -73,11 +73,11 @@ impl RobosenseQt64 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         Ok(())
     }
 
-    pub fn get_cloud(&self) -> AeroResult<Vec<LidarPoint3D>> {
+    pub fn get_cloud(&self) -> VortexResult<Vec<LidarPoint3D>> {
         Ok(Vec::new())
     }
 }
@@ -96,11 +96,11 @@ impl SickTim781 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         Ok(())
     }
 
-    pub fn read_scan(&self) -> AeroResult<Vec<u16>> {
+    pub fn read_scan(&self) -> VortexResult<Vec<u16>> {
         Ok(Vec::new())
     }
 }

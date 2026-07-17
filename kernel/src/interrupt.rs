@@ -2,7 +2,7 @@
 //! 
 //! Manages hardware and software interrupts
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// Interrupt number
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -24,7 +24,7 @@ impl InterruptNumber {
 }
 
 /// Interrupt handler function type
-pub type InterruptHandler = fn(InterruptNumber) -> AeroResult<()>;
+pub type InterruptHandler = fn(InterruptNumber) -> VortexResult<()>;
 
 /// Interrupt descriptor
 pub struct InterruptDescriptor {
@@ -73,7 +73,7 @@ impl InterruptController {
         irq: InterruptNumber,
         handler: InterruptHandler,
         priority: u8,
-    ) -> AeroResult<()> {
+    ) -> VortexResult<()> {
         let idx = irq.0 as usize;
         let mut desc = InterruptDescriptor::new(irq);
         desc.handler = Some(handler);
@@ -83,29 +83,29 @@ impl InterruptController {
     }
 
     /// Enable an interrupt
-    pub fn enable(&mut self, irq: InterruptNumber) -> AeroResult<()> {
+    pub fn enable(&mut self, irq: InterruptNumber) -> VortexResult<()> {
         let idx = irq.0 as usize;
         if let Some(desc) = &mut self.descriptors[idx] {
             desc.enabled = true;
             Ok(())
         } else {
-            Err(aero_types::AeroError::InvalidInterrupt)
+            Err(vortex_types::VortexError::InvalidInterrupt)
         }
     }
 
     /// Disable an interrupt
-    pub fn disable(&mut self, irq: InterruptNumber) -> AeroResult<()> {
+    pub fn disable(&mut self, irq: InterruptNumber) -> VortexResult<()> {
         let idx = irq.0 as usize;
         if let Some(desc) = &mut self.descriptors[idx] {
             desc.enabled = false;
             Ok(())
         } else {
-            Err(aero_types::AeroError::InvalidInterrupt)
+            Err(vortex_types::VortexError::InvalidInterrupt)
         }
     }
 
     /// Handle an interrupt
-    pub fn handle_interrupt(&mut self, irq: InterruptNumber) -> AeroResult<()> {
+    pub fn handle_interrupt(&mut self, irq: InterruptNumber) -> VortexResult<()> {
         let idx = irq.0 as usize;
         if let Some(Some(desc)) = self.descriptors.get_mut(idx) {
             if desc.enabled {
@@ -142,7 +142,7 @@ impl Default for InterruptController {
 static mut INTERRUPT_CONTROLLER: Option<InterruptController> = None;
 
 /// Initialize interrupt controller
-pub fn init() -> AeroResult<()> {
+pub fn init() -> VortexResult<()> {
     unsafe {
         INTERRUPT_CONTROLLER = Some(InterruptController::new());
     }

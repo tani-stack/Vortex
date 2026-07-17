@@ -1,7 +1,7 @@
 //! Advanced GPS/GNSS Drivers
 //! HERE3, HERE4, Novatel, Trimble, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 #[derive(Debug, Clone, Copy)]
 pub struct AdvancedGpsData {
@@ -33,14 +33,14 @@ impl Here3 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         // Initialize CAN interface
         self.can_send_msg(0x560 + self.node_id as u32, &[0x01, 0x00])?;
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<AdvancedGpsData> {
+    pub fn read(&mut self) -> VortexResult<AdvancedGpsData> {
         Ok(AdvancedGpsData {
             latitude: 0.0, longitude: 0.0, altitude: 0.0,
             satellites: 0, fix_type: 0,
@@ -49,7 +49,7 @@ impl Here3 {
         })
     }
 
-    fn can_send_msg(&self, id: u32, data: &[u8]) -> AeroResult<()> { Ok(()) }
+    fn can_send_msg(&self, id: u32, data: &[u8]) -> VortexResult<()> { Ok(()) }
 }
 
 /// HERE4 - Dual CAN GPS with better accuracy
@@ -66,12 +66,12 @@ impl Here4 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<AdvancedGpsData> {
+    pub fn read(&mut self) -> VortexResult<AdvancedGpsData> {
         Ok(AdvancedGpsData {
             latitude: 0.0, longitude: 0.0, altitude: 0.0,
             satellites: 0, fix_type: 0,
@@ -95,12 +95,12 @@ impl NovatelOem7 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<AdvancedGpsData> {
+    pub fn read(&mut self) -> VortexResult<AdvancedGpsData> {
         Ok(AdvancedGpsData {
             latitude: 0.0, longitude: 0.0, altitude: 0.0,
             satellites: 0, fix_type: 0,
@@ -124,12 +124,12 @@ impl TrimbleBd982 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<AdvancedGpsData> {
+    pub fn read(&mut self) -> VortexResult<AdvancedGpsData> {
         Ok(AdvancedGpsData {
             latitude: 0.0, longitude: 0.0, altitude: 0.0,
             satellites: 0, fix_type: 5,  // RTK Fixed

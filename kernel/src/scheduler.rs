@@ -5,7 +5,7 @@
 
 use alloc::vec::Vec;
 use alloc::collections::VecDeque;
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 use crate::task::{TaskId, TaskControlBlock, Priority, TaskState};
 
 /// Priority queue (bitmap-based for O(1) scheduling)
@@ -107,7 +107,7 @@ impl Scheduler {
     }
 
     /// Initialize scheduler
-    pub fn init() -> AeroResult<()> {
+    pub fn init() -> VortexResult<()> {
         Ok(())
     }
 
@@ -118,7 +118,7 @@ impl Scheduler {
         priority: Priority,
         entry: extern "C" fn(),
         stack_size: usize,
-    ) -> AeroResult<TaskId> {
+    ) -> VortexResult<TaskId> {
         let id = TaskId(self.next_id);
         self.next_id += 1;
 
@@ -167,7 +167,7 @@ impl Scheduler {
     }
 
     /// Block current task (waiting for event)
-    pub fn block_task(&mut self, task_id: TaskId) -> AeroResult<()> {
+    pub fn block_task(&mut self, task_id: TaskId) -> VortexResult<()> {
         if let Some(Some(task)) = self.tasks.get_mut(task_id.0 as usize) {
             self.ready_queue.dequeue(task_id, task.priority);
             task.state = TaskState::Blocked;
@@ -177,7 +177,7 @@ impl Scheduler {
     }
 
     /// Unblock a task
-    pub fn unblock_task(&mut self, task_id: TaskId) -> AeroResult<()> {
+    pub fn unblock_task(&mut self, task_id: TaskId) -> VortexResult<()> {
         if let Some(Some(task)) = self.tasks.get_mut(task_id.0 as usize) {
             if task.state == TaskState::Blocked {
                 task.state = TaskState::Ready;
@@ -227,7 +227,7 @@ impl Default for Scheduler {
 static mut SCHEDULER: Option<Scheduler> = None;
 
 /// Initialize the global scheduler
-pub fn init() -> AeroResult<()> {
+pub fn init() -> VortexResult<()> {
     unsafe {
         SCHEDULER = Some(Scheduler::new());
     }

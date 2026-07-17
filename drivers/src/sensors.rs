@@ -2,7 +2,7 @@
 //! IMU, GPS, Barometer, Magnetometer, etc.
 
 use crate::device_registry::{GenericDevice, DeviceMetadata, DeviceId, DeviceStatus, HealthStatus};
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 use core::fmt;
 
 /// Unified sensor reading
@@ -48,14 +48,14 @@ impl fmt::Display for SensorUnit {
 
 /// Generic sensor trait
 pub trait Sensor: GenericDevice {
-    fn read_value(&mut self) -> AeroResult<SensorReading>;
-    fn read_raw(&mut self) -> AeroResult<u16> {
+    fn read_value(&mut self) -> VortexResult<SensorReading>;
+    fn read_raw(&mut self) -> VortexResult<u16> {
         Ok(0)
     }
-    fn calibrate(&mut self) -> AeroResult<()> {
+    fn calibrate(&mut self) -> VortexResult<()> {
         Ok(())
     }
-    fn set_sample_rate(&mut self, hz: u32) -> AeroResult<()>;
+    fn set_sample_rate(&mut self, hz: u32) -> VortexResult<()>;
     fn get_sample_rate(&self) -> u32 {
         self.metadata().sample_rate_hz.unwrap_or(100)
     }
@@ -108,19 +108,19 @@ impl GenericImu {
 impl GenericDevice for GenericImu {
     fn id(&self) -> DeviceId { self.id }
     fn metadata(&self) -> &DeviceMetadata { &self.metadata }
-    fn init(&mut self) -> AeroResult<()> { self.initialized = true; Ok(()) }
-    fn deinit(&mut self) -> AeroResult<()> { self.initialized = false; Ok(()) }
-    fn reset(&mut self) -> AeroResult<()> { Ok(()) }
+    fn init(&mut self) -> VortexResult<()> { self.initialized = true; Ok(()) }
+    fn deinit(&mut self) -> VortexResult<()> { self.initialized = false; Ok(()) }
+    fn reset(&mut self) -> VortexResult<()> { Ok(()) }
     fn status(&self) -> DeviceStatus { if self.initialized { DeviceStatus::Ready } else { DeviceStatus::Uninitialized } }
     fn health(&self) -> HealthStatus { if self.initialized { HealthStatus::Healthy } else { HealthStatus::Offline } }
-    fn read_property(&self, _key: &str) -> AeroResult<u32> { Ok(0) }
-    fn write_property(&mut self, _key: &str, _value: u32) -> AeroResult<()> { Ok(()) }
-    fn read_raw(&mut self, _buf: &mut [u8]) -> AeroResult<usize> { Ok(0) }
-    fn write_raw(&mut self, _data: &[u8]) -> AeroResult<()> { Ok(()) }
+    fn read_property(&self, _key: &str) -> VortexResult<u32> { Ok(0) }
+    fn write_property(&mut self, _key: &str, _value: u32) -> VortexResult<()> { Ok(()) }
+    fn read_raw(&mut self, _buf: &mut [u8]) -> VortexResult<usize> { Ok(0) }
+    fn write_raw(&mut self, _data: &[u8]) -> VortexResult<()> { Ok(()) }
 }
 
 impl Sensor for GenericImu {
-    fn read_value(&mut self) -> AeroResult<SensorReading> {
+    fn read_value(&mut self) -> VortexResult<SensorReading> {
         let accel_magnitude = (self.last_data.accel_x.powi(2) + self.last_data.accel_y.powi(2) + self.last_data.accel_z.powi(2)).sqrt();
         Ok(SensorReading {
             value: accel_magnitude,
@@ -129,7 +129,7 @@ impl Sensor for GenericImu {
             confidence: 0.95,
         })
     }
-    fn set_sample_rate(&mut self, hz: u32) -> AeroResult<()> {
+    fn set_sample_rate(&mut self, hz: u32) -> VortexResult<()> {
         Ok(())
     }
 }
@@ -175,19 +175,19 @@ impl GenericGps {
 impl GenericDevice for GenericGps {
     fn id(&self) -> DeviceId { self.id }
     fn metadata(&self) -> &DeviceMetadata { &self.metadata }
-    fn init(&mut self) -> AeroResult<()> { self.initialized = true; Ok(()) }
-    fn deinit(&mut self) -> AeroResult<()> { self.initialized = false; Ok(()) }
-    fn reset(&mut self) -> AeroResult<()> { Ok(()) }
+    fn init(&mut self) -> VortexResult<()> { self.initialized = true; Ok(()) }
+    fn deinit(&mut self) -> VortexResult<()> { self.initialized = false; Ok(()) }
+    fn reset(&mut self) -> VortexResult<()> { Ok(()) }
     fn status(&self) -> DeviceStatus { if self.initialized { DeviceStatus::Ready } else { DeviceStatus::Uninitialized } }
     fn health(&self) -> HealthStatus { if self.last_data.fix_type >= 3 { HealthStatus::Healthy } else { HealthStatus::Warning } }
-    fn read_property(&self, _key: &str) -> AeroResult<u32> { Ok(0) }
-    fn write_property(&mut self, _key: &str, _value: u32) -> AeroResult<()> { Ok(()) }
-    fn read_raw(&mut self, _buf: &mut [u8]) -> AeroResult<usize> { Ok(0) }
-    fn write_raw(&mut self, _data: &[u8]) -> AeroResult<()> { Ok(()) }
+    fn read_property(&self, _key: &str) -> VortexResult<u32> { Ok(0) }
+    fn write_property(&mut self, _key: &str, _value: u32) -> VortexResult<()> { Ok(()) }
+    fn read_raw(&mut self, _buf: &mut [u8]) -> VortexResult<usize> { Ok(0) }
+    fn write_raw(&mut self, _data: &[u8]) -> VortexResult<()> { Ok(()) }
 }
 
 impl Sensor for GenericGps {
-    fn read_value(&mut self) -> AeroResult<SensorReading> {
+    fn read_value(&mut self) -> VortexResult<SensorReading> {
         Ok(SensorReading {
             value: self.last_data.altitude,
             unit: SensorUnit::Distance,
@@ -195,7 +195,7 @@ impl Sensor for GenericGps {
             confidence: if self.last_data.fix_type >= 3 { 0.95 } else { 0.1 },
         })
     }
-    fn set_sample_rate(&mut self, _hz: u32) -> AeroResult<()> { Ok(()) }
+    fn set_sample_rate(&mut self, _hz: u32) -> VortexResult<()> { Ok(()) }
 }
 
 /// Barometer Sensor Data
@@ -238,19 +238,19 @@ impl GenericBarometer {
 impl GenericDevice for GenericBarometer {
     fn id(&self) -> DeviceId { self.id }
     fn metadata(&self) -> &DeviceMetadata { &self.metadata }
-    fn init(&mut self) -> AeroResult<()> { self.initialized = true; Ok(()) }
-    fn deinit(&mut self) -> AeroResult<()> { self.initialized = false; Ok(()) }
-    fn reset(&mut self) -> AeroResult<()> { Ok(()) }
+    fn init(&mut self) -> VortexResult<()> { self.initialized = true; Ok(()) }
+    fn deinit(&mut self) -> VortexResult<()> { self.initialized = false; Ok(()) }
+    fn reset(&mut self) -> VortexResult<()> { Ok(()) }
     fn status(&self) -> DeviceStatus { if self.initialized { DeviceStatus::Ready } else { DeviceStatus::Uninitialized } }
     fn health(&self) -> HealthStatus { HealthStatus::Healthy }
-    fn read_property(&self, _key: &str) -> AeroResult<u32> { Ok(0) }
-    fn write_property(&mut self, _key: &str, _value: u32) -> AeroResult<()> { Ok(()) }
-    fn read_raw(&mut self, _buf: &mut [u8]) -> AeroResult<usize> { Ok(0) }
-    fn write_raw(&mut self, _data: &[u8]) -> AeroResult<()> { Ok(()) }
+    fn read_property(&self, _key: &str) -> VortexResult<u32> { Ok(0) }
+    fn write_property(&mut self, _key: &str, _value: u32) -> VortexResult<()> { Ok(()) }
+    fn read_raw(&mut self, _buf: &mut [u8]) -> VortexResult<usize> { Ok(0) }
+    fn write_raw(&mut self, _data: &[u8]) -> VortexResult<()> { Ok(()) }
 }
 
 impl Sensor for GenericBarometer {
-    fn read_value(&mut self) -> AeroResult<SensorReading> {
+    fn read_value(&mut self) -> VortexResult<SensorReading> {
         Ok(SensorReading {
             value: self.last_data.pressure,
             unit: SensorUnit::Pressure,
@@ -258,6 +258,6 @@ impl Sensor for GenericBarometer {
             confidence: 0.98,
         })
     }
-    fn set_sample_rate(&mut self, _hz: u32) -> AeroResult<()> { Ok(()) }
+    fn set_sample_rate(&mut self, _hz: u32) -> VortexResult<()> { Ok(()) }
 }
 // Universal sensor abstraction layer

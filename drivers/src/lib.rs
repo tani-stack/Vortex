@@ -44,10 +44,10 @@ pub mod motor_generic;
 pub mod sensor_generic;
 pub mod camera;
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// Initialize all drivers
-pub fn init_all() -> AeroResult<()> {
+pub fn init_all() -> VortexResult<()> {
     hal::init();
     Ok(())
 }

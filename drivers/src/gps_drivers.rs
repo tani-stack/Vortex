@@ -1,7 +1,7 @@
 //! GPS Drivers - Complete Implementation
 //! Ublox M10, Ublox NEO-M9N, Septentrio mosaic-X5
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 #[derive(Debug, Clone, Copy)]
 pub struct GpsData {
@@ -33,7 +33,7 @@ impl UbloxM10 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         // Configure UART
         self.uart_init(self.uart_port, self.baudrate)?;
         
@@ -56,7 +56,7 @@ impl UbloxM10 {
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<GpsData> {
+    pub fn read(&mut self) -> VortexResult<GpsData> {
         let mut buffer = [0u8; 256];
         let n = self.uart_read(&mut buffer)?;
         
@@ -64,7 +64,7 @@ impl UbloxM10 {
         self.parse_gps_data(&buffer[..n])
     }
 
-    fn parse_gps_data(&self, data: &[u8]) -> AeroResult<GpsData> {
+    fn parse_gps_data(&self, data: &[u8]) -> VortexResult<GpsData> {
         // NMEA RMC sentence parsing
         Ok(GpsData {
             latitude: 0.0,
@@ -80,9 +80,9 @@ impl UbloxM10 {
         })
     }
 
-    fn uart_init(&self, port: u8, baud: u32) -> AeroResult<()> { Ok(()) }
-    fn uart_write(&self, data: &[u8]) -> AeroResult<()> { Ok(()) }
-    fn uart_read(&self, buf: &mut [u8]) -> AeroResult<usize> { Ok(0) }
+    fn uart_init(&self, port: u8, baud: u32) -> VortexResult<()> { Ok(()) }
+    fn uart_write(&self, data: &[u8]) -> VortexResult<()> { Ok(()) }
+    fn uart_read(&self, buf: &mut [u8]) -> VortexResult<usize> { Ok(0) }
 }
 
 /// Ublox NEO-M9N (Multi-band GNSS)
@@ -99,12 +99,12 @@ impl UbloxNeoM9n {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<GpsData> {
+    pub fn read(&mut self) -> VortexResult<GpsData> {
         Ok(GpsData {
             latitude: 0.0, longitude: 0.0, altitude: 0.0,
             satellites: 0, fix_type: 0, hdop: 999.0, vdop: 999.0,
@@ -127,12 +127,12 @@ impl SeptentrioMosaicX5 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<GpsData> {
+    pub fn read(&mut self) -> VortexResult<GpsData> {
         Ok(GpsData {
             latitude: 0.0, longitude: 0.0, altitude: 0.0,
             satellites: 0, fix_type: 0, hdop: 999.0, vdop: 999.0,

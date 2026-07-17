@@ -1,7 +1,7 @@
 //! Radar Drivers
 //! automotive radar, motion detection, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 #[derive(Debug, Clone, Copy)]
 pub struct RadarTarget {
@@ -26,12 +26,12 @@ impl IWR6843 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn get_targets(&self) -> AeroResult<Vec<RadarTarget>> {
+    pub fn get_targets(&self) -> VortexResult<Vec<RadarTarget>> {
         Ok(Vec::new())
     }
 }
@@ -50,12 +50,12 @@ impl ContinentalArs408 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn detect_objects(&self) -> AeroResult<Vec<RadarTarget>> {
+    pub fn detect_objects(&self) -> VortexResult<Vec<RadarTarget>> {
         Ok(Vec::new())
     }
 }

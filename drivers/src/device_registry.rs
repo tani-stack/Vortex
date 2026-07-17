@@ -12,7 +12,7 @@ use alloc::collections::BTreeMap;
 use alloc::string::String;
 use alloc::vec::Vec;
 use alloc::boxed::Box;
-use aero_types::{AeroError, AeroResult};
+use vortex_types::{VortexError, VortexResult};
 use core::fmt;
 
 /// Unique device identifier (globally unique)
@@ -239,9 +239,9 @@ impl DeviceMetadata {
 pub trait GenericDevice: Send + Sync {
     fn id(&self) -> DeviceId;
     fn metadata(&self) -> &DeviceMetadata;
-    fn init(&mut self) -> AeroResult<()>;
-    fn deinit(&mut self) -> AeroResult<()>;
-    fn reset(&mut self) -> AeroResult<()>;
+    fn init(&mut self) -> VortexResult<()>;
+    fn deinit(&mut self) -> VortexResult<()>;
+    fn reset(&mut self) -> VortexResult<()>;
     fn status(&self) -> DeviceStatus;
     fn health(&self) -> HealthStatus;
     
@@ -249,12 +249,12 @@ pub trait GenericDevice: Send + Sync {
         matches!(self.status(), DeviceStatus::Ready | DeviceStatus::Running)
     }
     
-    fn suspend(&mut self) -> AeroResult<()> { Ok(()) }
-    fn resume(&mut self) -> AeroResult<()> { Ok(()) }
-    fn read_property(&self, key: &str) -> AeroResult<u32>;
-    fn write_property(&mut self, key: &str, value: u32) -> AeroResult<()>;
-    fn read_raw(&mut self, buf: &mut [u8]) -> AeroResult<usize>;
-    fn write_raw(&mut self, data: &[u8]) -> AeroResult<()>;
+    fn suspend(&mut self) -> VortexResult<()> { Ok(()) }
+    fn resume(&mut self) -> VortexResult<()> { Ok(()) }
+    fn read_property(&self, key: &str) -> VortexResult<u32>;
+    fn write_property(&mut self, key: &str, value: u32) -> VortexResult<()>;
+    fn read_raw(&mut self, buf: &mut [u8]) -> VortexResult<usize>;
+    fn write_raw(&mut self, data: &[u8]) -> VortexResult<()>;
     
     fn get_stats(&self) -> DeviceStats {
         DeviceStats::default()
@@ -283,7 +283,7 @@ pub enum DeviceEvent {
     DataAvailable(DeviceId),
 }
 
-pub type DeviceEventCallback = fn(DeviceEvent) -> AeroResult<()>;
+pub type DeviceEventCallback = fn(DeviceEvent) -> VortexResult<()>;
 
 /// Central Device Registry
 pub struct DeviceRegistry {
@@ -305,7 +305,7 @@ impl DeviceRegistry {
         }
     }
 
-    pub fn register(&mut self, mut device: Box<dyn GenericDevice>) -> AeroResult<DeviceId> {
+    pub fn register(&mut self, mut device: Box<dyn GenericDevice>) -> VortexResult<DeviceId> {
         let id = device.id();
         device.init()?;
         let metadata = device.metadata().clone();
@@ -315,23 +315,23 @@ impl DeviceRegistry {
         Ok(id)
     }
 
-    pub fn unregister(&mut self, id: DeviceId) -> AeroResult<()> {
+    pub fn unregister(&mut self, id: DeviceId) -> VortexResult<()> {
         if let Some(mut device) = self.devices.remove(&id) {
             device.deinit()?;
             self.device_metadata.remove(&id);
             self.fire_event(DeviceEvent::Deinitialized(id));
             Ok(())
         } else {
-            Err(AeroError::HardwareNotFound)
+            Err(VortexError::HardwareNotFound)
         }
     }
 
-    pub fn get(&self, id: DeviceId) -> AeroResult<&dyn GenericDevice> {
-        self.devices.get(&id).map(|d| d.as_ref() as &dyn GenericDevice).ok_or(AeroError::HardwareNotFound)
+    pub fn get(&self, id: DeviceId) -> VortexResult<&dyn GenericDevice> {
+        self.devices.get(&id).map(|d| d.as_ref() as &dyn GenericDevice).ok_or(VortexError::HardwareNotFound)
     }
 
-    pub fn get_mut(&mut self, id: DeviceId) -> AeroResult<&mut dyn GenericDevice> {
-        self.devices.get_mut(&id).map(|d| d.as_mut() as &mut dyn GenericDevice).ok_or(AeroError::HardwareNotFound)
+    pub fn get_mut(&mut self, id: DeviceId) -> VortexResult<&mut dyn GenericDevice> {
+        self.devices.get_mut(&id).map(|d| d.as_mut() as &mut dyn GenericDevice).ok_or(VortexError::HardwareNotFound)
     }
 
     pub fn find_by_type(&self, device_type: DeviceType) -> Vec<DeviceId> {
@@ -350,8 +350,8 @@ impl DeviceRegistry {
         self.device_metadata.iter().filter(|(_, m)| m.name.contains(pattern)).map(|(id, _)| *id).collect()
     }
 
-    pub fn get_metadata(&self, id: DeviceId) -> AeroResult<&DeviceMetadata> {
-        self.device_metadata.get(&id).ok_or(AeroError::HardwareNotFound)
+    pub fn get_metadata(&self, id: DeviceId) -> VortexResult<&DeviceMetadata> {
+        self.device_metadata.get(&id).ok_or(VortexError::HardwareNotFound)
     }
 
     pub fn count(&self) -> usize { self.devices.len() }
@@ -366,32 +366,32 @@ impl DeviceRegistry {
         self.find_by_type(device_type).iter().filter_map(|id| self.devices.get(id).map(|d| (*id, d.health()))).collect()
     }
 
-    pub fn init_all(&mut self) -> AeroResult<()> {
+    pub fn init_all(&mut self) -> VortexResult<()> {
         let ids: Vec<_> = self.devices.keys().copied().collect();
         for id in ids { self.get_mut(id)?.init()?; }
         Ok(())
     }
 
-    pub fn deinit_all(&mut self) -> AeroResult<()> {
+    pub fn deinit_all(&mut self) -> VortexResult<()> {
         let ids: Vec<_> = self.devices.keys().copied().collect();
         for id in ids { self.get_mut(id)?.deinit()?; }
         Ok(())
     }
 
-    pub fn resume_all(&mut self) -> AeroResult<()> {
+    pub fn resume_all(&mut self) -> VortexResult<()> {
         let ids: Vec<_> = self.devices.keys().copied().collect();
         for id in ids { self.get_mut(id)?.resume()?; }
         Ok(())
     }
 
-    pub fn suspend_all(&mut self) -> AeroResult<()> {
+    pub fn suspend_all(&mut self) -> VortexResult<()> {
         let ids: Vec<_> = self.devices.keys().copied().collect();
         for id in ids { self.get_mut(id)?.suspend()?; }
         Ok(())
     }
 
-    pub fn register_event_callback(&mut self, callback: DeviceEventCallback) -> AeroResult<()> {
-        if self.callback_count >= 8 { return Err(AeroError::ResourceExhausted); }
+    pub fn register_event_callback(&mut self, callback: DeviceEventCallback) -> VortexResult<()> {
+        if self.callback_count >= 8 { return Err(VortexError::ResourceExhausted); }
         self.event_callbacks[self.callback_count] = Some(callback);
         self.callback_count += 1;
         Ok(())
@@ -403,11 +403,11 @@ impl DeviceRegistry {
         }
     }
 
-    pub fn get_stats(&self, id: DeviceId) -> AeroResult<DeviceStats> {
+    pub fn get_stats(&self, id: DeviceId) -> VortexResult<DeviceStats> {
         self.get(id).map(|d| d.get_stats())
     }
 
-    pub fn reset_all(&mut self) -> AeroResult<()> {
+    pub fn reset_all(&mut self) -> VortexResult<()> {
         let ids: Vec<_> = self.devices.keys().copied().collect();
         for id in ids { self.get_mut(id)?.reset()?; }
         Ok(())

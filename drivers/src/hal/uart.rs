@@ -1,6 +1,6 @@
 //! UART (Universal Asynchronous Receiver-Transmitter) HAL
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UARTBaud {
@@ -29,34 +29,34 @@ pub struct UART {
 }
 
 impl UART {
-    pub fn new(port: u8, baud: UARTBaud) -> AeroResult<Self> {
+    pub fn new(port: u8, baud: UARTBaud) -> VortexResult<Self> {
         Self::init_uart(port, baud)?;
         Ok(Self { port, baud })
     }
 
-    pub fn set_baud(&mut self, baud: UARTBaud) -> AeroResult<()> {
+    pub fn set_baud(&mut self, baud: UARTBaud) -> VortexResult<()> {
         Self::configure_baud(self.port, baud)?;
         self.baud = baud;
         Ok(())
     }
 
-    pub fn write_byte(&self, byte: u8) -> AeroResult<()> {
+    pub fn write_byte(&self, byte: u8) -> VortexResult<()> {
         Self::tx_byte(self.port, byte)?;
         Ok(())
     }
 
-    pub fn write_bytes(&self, data: &[u8]) -> AeroResult<()> {
+    pub fn write_bytes(&self, data: &[u8]) -> VortexResult<()> {
         for &byte in data {
             Self::tx_byte(self.port, byte)?;
         }
         Ok(())
     }
 
-    pub fn read_byte(&self) -> AeroResult<Option<u8>> {
+    pub fn read_byte(&self) -> VortexResult<Option<u8>> {
         Self::rx_byte(self.port)
     }
 
-    pub fn read_available(&self, buf: &mut [u8]) -> AeroResult<usize> {
+    pub fn read_available(&self, buf: &mut [u8]) -> VortexResult<usize> {
         let mut count = 0;
         while count < buf.len() {
             match Self::rx_byte(self.port)? {
@@ -70,30 +70,30 @@ impl UART {
         Ok(count)
     }
 
-    pub fn write_string(&self, s: &str) -> AeroResult<()> {
+    pub fn write_string(&self, s: &str) -> VortexResult<()> {
         self.write_bytes(s.as_bytes())
     }
 
     #[inline(always)]
-    fn init_uart(port: u8, _baud: UARTBaud) -> AeroResult<()> {
+    fn init_uart(port: u8, _baud: UARTBaud) -> VortexResult<()> {
         let _ = port;
         Ok(())
     }
 
     #[inline(always)]
-    fn configure_baud(port: u8, _baud: UARTBaud) -> AeroResult<()> {
+    fn configure_baud(port: u8, _baud: UARTBaud) -> VortexResult<()> {
         let _ = port;
         Ok(())
     }
 
     #[inline(always)]
-    fn tx_byte(port: u8, _byte: u8) -> AeroResult<()> {
+    fn tx_byte(port: u8, _byte: u8) -> VortexResult<()> {
         let _ = port;
         Ok(())
     }
 
     #[inline(always)]
-    fn rx_byte(port: u8) -> AeroResult<Option<u8>> {
+    fn rx_byte(port: u8) -> VortexResult<Option<u8>> {
         let _ = port;
         Ok(None)
     }

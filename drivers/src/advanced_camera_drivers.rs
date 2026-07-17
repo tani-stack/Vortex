@@ -1,7 +1,7 @@
 //! Advanced Camera Drivers
 //! Intel RealSense, Zed, Stereo Vision, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 #[derive(Debug, Clone, Copy)]
 pub struct DepthFrame {
@@ -38,16 +38,16 @@ impl RealSenseD455 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn get_depth_frame(&self) -> AeroResult<Vec<u16>> {
+    pub fn get_depth_frame(&self) -> VortexResult<Vec<u16>> {
         Ok(Vec::new())
     }
 
-    pub fn get_rgb_frame(&self) -> AeroResult<Vec<u8>> {
+    pub fn get_rgb_frame(&self) -> VortexResult<Vec<u8>> {
         Ok(Vec::new())
     }
 }
@@ -66,16 +66,16 @@ impl Zed2i {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn get_depth(&self) -> AeroResult<Vec<u16>> {
+    pub fn get_depth(&self) -> VortexResult<Vec<u16>> {
         Ok(Vec::new())
     }
 
-    pub fn get_pose(&self) -> AeroResult<(f32, f32, f32)> {
+    pub fn get_pose(&self) -> VortexResult<(f32, f32, f32)> {
         Ok((0.0, 0.0, 0.0))
     }
 }
@@ -94,12 +94,12 @@ impl OakD {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn get_stereo_depth(&self) -> AeroResult<Vec<u16>> {
+    pub fn get_stereo_depth(&self) -> VortexResult<Vec<u16>> {
         Ok(Vec::new())
     }
 }
@@ -118,12 +118,12 @@ impl OpenMvCamH7 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn detect_objects(&self) -> AeroResult<Vec<(u16, u16, u16, u16)>> {
+    pub fn detect_objects(&self) -> VortexResult<Vec<(u16, u16, u16, u16)>> {
         Ok(Vec::new())
     }
 }

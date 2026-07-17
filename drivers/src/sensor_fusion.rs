@@ -1,7 +1,7 @@
 //! IMU Calibration & Fusion
 //! Calibration algorithms and multi-sensor fusion
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// IMU Calibration Manager
 pub struct ImuCalibrator {
@@ -78,12 +78,12 @@ impl SensorFusion {
         }
     }
 
-    pub fn fuse_imu_gps(&self, imu_acc: [f32; 3], gps_pos: [f64; 3]) -> AeroResult<[f32; 3]> {
+    pub fn fuse_imu_gps(&self, imu_acc: [f32; 3], gps_pos: [f64; 3]) -> VortexResult<[f32; 3]> {
         // Fuse IMU acceleration with GPS position
         Ok([0.0, 0.0, 0.0])
     }
 
-    pub fn fuse_imu_mag(&self, imu: [f32; 6], mag: [f32; 3]) -> AeroResult<[f32; 3]> {
+    pub fn fuse_imu_mag(&self, imu: [f32; 6], mag: [f32; 3]) -> VortexResult<[f32; 3]> {
         // Fuse IMU with magnetometer for heading
         Ok([0.0, 0.0, 0.0])
     }

@@ -1,7 +1,7 @@
 //! Barometric Pressure Sensor Drivers
 //! BMP390, BME680, MS5611, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 #[derive(Debug, Clone, Copy)]
 pub struct BarometerData {
@@ -27,7 +27,7 @@ impl Bmp390 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         // Reset
         self.write_reg(0x7E, 0xB6)?;
         
@@ -41,9 +41,9 @@ impl Bmp390 {
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<BarometerData> {
+    pub fn read(&mut self) -> VortexResult<BarometerData> {
         if !self.initialized {
-            return Err(aero_types::AeroError::HardwareError);
+            return Err(vortex_types::VortexError::HardwareError);
         }
 
         let mut adc = [0u8; 3];
@@ -62,8 +62,8 @@ impl Bmp390 {
         })
     }
 
-    fn write_reg(&self, reg: u8, val: u8) -> AeroResult<()> { Ok(()) }
-    fn read_regs(&self, reg: u8, data: &mut [u8]) -> AeroResult<()> { Ok(()) }
+    fn write_reg(&self, reg: u8, val: u8) -> VortexResult<()> { Ok(()) }
+    fn read_regs(&self, reg: u8, data: &mut [u8]) -> VortexResult<()> { Ok(()) }
 }
 
 /// BME680 (Temperature, Humidity, Pressure, Air Quality)
@@ -80,12 +80,12 @@ impl Bme680 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read_pressure(&mut self) -> AeroResult<BarometerData> {
+    pub fn read_pressure(&mut self) -> VortexResult<BarometerData> {
         Ok(BarometerData {
             pressure_pa: 101325.0,
             temperature: 25.0,
@@ -94,8 +94,8 @@ impl Bme680 {
         })
     }
 
-    pub fn read_humidity(&mut self) -> AeroResult<f32> { Ok(50.0) }
-    pub fn read_gas_resistance(&mut self) -> AeroResult<u32> { Ok(10000) }
+    pub fn read_humidity(&mut self) -> VortexResult<f32> { Ok(50.0) }
+    pub fn read_gas_resistance(&mut self) -> VortexResult<u32> { Ok(10000) }
 }
 
 /// MS5611 (I2C Barometer)
@@ -112,12 +112,12 @@ impl Ms5611 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<BarometerData> {
+    pub fn read(&mut self) -> VortexResult<BarometerData> {
         Ok(BarometerData {
             pressure_pa: 101325.0,
             temperature: 25.0,

@@ -1,7 +1,7 @@
 //! Sensor Drivers - Ultrasonic, Temperature, Current, etc.
 //! HC-SR04, LM35, ACS712, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// HC-SR04 Ultrasonic Distance Sensor
 pub struct HcSr04 {
@@ -21,12 +21,12 @@ impl HcSr04 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<u16> {
+    pub fn read(&mut self) -> VortexResult<u16> {
         // Trigger measurement
         self.trigger_measurement()?;
         
@@ -37,8 +37,8 @@ impl HcSr04 {
         Ok(self.distance_mm)
     }
 
-    fn trigger_measurement(&self) -> AeroResult<()> { Ok(()) }
-    fn measure_echo_time(&self) -> AeroResult<u32> { Ok(0) }
+    fn trigger_measurement(&self) -> VortexResult<()> { Ok(()) }
+    fn measure_echo_time(&self) -> VortexResult<u32> { Ok(0) }
 }
 
 /// LM35 Temperature Sensor (Analog)
@@ -55,19 +55,19 @@ impl Lm35 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<f32> {
+    pub fn read(&mut self) -> VortexResult<f32> {
         let adc_value = self.read_adc()?;
         // LM35: 10mV per °C
         let temperature = (adc_value as f32 * 3.3) / 1024.0 * 100.0;
         Ok(temperature)
     }
 
-    fn read_adc(&self) -> AeroResult<u16> { Ok(0) }
+    fn read_adc(&self) -> VortexResult<u16> { Ok(0) }
 }
 
 /// ACS712 Current Sensor (5A, 20A, 30A variants)
@@ -86,16 +86,16 @@ impl Acs712 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> { Ok(()) }
+    pub fn init(&mut self) -> VortexResult<()> { Ok(()) }
 
-    pub fn read(&mut self) -> AeroResult<f32> {
+    pub fn read(&mut self) -> VortexResult<f32> {
         let adc_value = self.read_adc()?;
         let voltage_offset = (adc_value as i16 - self.zero_current_offset as i16) as f32;
         let current = (voltage_offset * 3.3) / (1024.0 * self.sensitivity_mv_a / 1000.0);
         Ok(current)
     }
 
-    fn read_adc(&self) -> AeroResult<u16> { Ok(0) }
+    fn read_adc(&self) -> VortexResult<u16> { Ok(0) }
 }
 
 /// INA219 Current/Power Monitor (I2C)
@@ -112,11 +112,11 @@ impl Ina219 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> { Ok(()) }
+    pub fn init(&mut self) -> VortexResult<()> { Ok(()) }
 
-    pub fn read_current(&mut self) -> AeroResult<f32> { Ok(0.0) }
-    pub fn read_voltage(&mut self) -> AeroResult<f32> { Ok(12.0) }
-    pub fn read_power(&mut self) -> AeroResult<f32> { Ok(0.0) }
+    pub fn read_current(&mut self) -> VortexResult<f32> { Ok(0.0) }
+    pub fn read_voltage(&mut self) -> VortexResult<f32> { Ok(12.0) }
+    pub fn read_power(&mut self) -> VortexResult<f32> { Ok(0.0) }
 }
 
 /// DHT22 Temperature & Humidity Sensor
@@ -135,9 +135,9 @@ impl Dht22 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> { Ok(()) }
+    pub fn init(&mut self) -> VortexResult<()> { Ok(()) }
 
-    pub fn read(&mut self) -> AeroResult<(f32, f32)> {
+    pub fn read(&mut self) -> VortexResult<(f32, f32)> {
         Ok((self.temperature, self.humidity))
     }
 }

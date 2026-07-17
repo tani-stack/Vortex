@@ -4,7 +4,7 @@
 
 use alloc::collections::VecDeque;
 use alloc::vec::Vec;
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 use crate::task::TaskId;
 
 /// Message
@@ -52,9 +52,9 @@ impl MessageQueue {
     }
 
     /// Send a message (blocking if queue full)
-    pub fn send(&mut self, msg: Message) -> AeroResult<()> {
+    pub fn send(&mut self, msg: Message) -> VortexResult<()> {
         if self.messages.len() >= self.max_size {
-            return Err(aero_types::AeroError::MessageQueueFull);
+            return Err(vortex_types::VortexError::MessageQueueFull);
         }
         self.messages.push_back(msg);
         Ok(())
@@ -205,23 +205,23 @@ impl IpcManager {
     }
 
     /// Send a message to a task
-    pub fn send_message(&mut self, to: TaskId, msg: Message) -> AeroResult<()> {
+    pub fn send_message(&mut self, to: TaskId, msg: Message) -> VortexResult<()> {
         let idx = to.0 as usize;
         if let Some(Some(queue)) = self.queues.get_mut(idx) {
             queue.send(msg)?;
             Ok(())
         } else {
-            Err(aero_types::AeroError::TaskNotFound)
+            Err(vortex_types::VortexError::TaskNotFound)
         }
     }
 
     /// Receive a message from a task's queue
-    pub fn receive_message(&mut self, from: TaskId) -> AeroResult<Option<Message>> {
+    pub fn receive_message(&mut self, from: TaskId) -> VortexResult<Option<Message>> {
         let idx = from.0 as usize;
         if let Some(Some(queue)) = self.queues.get_mut(idx) {
             Ok(queue.receive())
         } else {
-            Err(aero_types::AeroError::TaskNotFound)
+            Err(vortex_types::VortexError::TaskNotFound)
         }
     }
 
@@ -231,7 +231,7 @@ impl IpcManager {
         to: TaskId,
         resource_id: u32,
         permissions: u32,
-    ) -> AeroResult<u32> {
+    ) -> VortexResult<u32> {
         let cap_id = self.next_cap_id;
         self.next_cap_id += 1;
 
@@ -248,7 +248,7 @@ impl IpcManager {
             caps.add(Capability::new(cap_id, resource_id, permissions));
             Ok(cap_id)
         } else {
-            Err(aero_types::AeroError::OperationFailed)
+            Err(vortex_types::VortexError::OperationFailed)
         }
     }
 
@@ -277,7 +277,7 @@ impl Default for IpcManager {
 static mut IPC_MANAGER: Option<IpcManager> = None;
 
 /// Initialize IPC manager
-pub fn init() -> AeroResult<()> {
+pub fn init() -> VortexResult<()> {
     unsafe {
         IPC_MANAGER = Some(IpcManager::new());
     }

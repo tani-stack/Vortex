@@ -1,7 +1,7 @@
 //! Advanced IMU Drivers
 //! LSM6DSL, LSM9DS1, ICM20948, BNO055, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// Advanced IMU Data with temperature calibration
 #[derive(Debug, Clone, Copy)]
@@ -32,7 +32,7 @@ impl Lsm6dsl {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         // CTRL1_XL: 416Hz, ±16g acceleration
         self.write_reg(0x10, 0x80)?;
         // CTRL2_G: 416Hz, ±2000 dps gyro
@@ -46,9 +46,9 @@ impl Lsm6dsl {
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<AdvancedImuData> {
+    pub fn read(&mut self) -> VortexResult<AdvancedImuData> {
         if !self.initialized {
-            return Err(aero_types::AeroError::HardwareError);
+            return Err(vortex_types::VortexError::HardwareError);
         }
 
         let mut data = [0u8; 12];
@@ -68,15 +68,15 @@ impl Lsm6dsl {
         })
     }
 
-    pub fn read_fifo(&mut self) -> AeroResult<usize> {
+    pub fn read_fifo(&mut self) -> VortexResult<usize> {
         let fifo_status = self.read_reg(0x3A)?;
         let samples = (fifo_status as usize) & 0xFF;
         Ok(samples)
     }
 
-    fn write_reg(&self, reg: u8, val: u8) -> AeroResult<()> { Ok(()) }
-    fn read_reg(&self, reg: u8) -> AeroResult<u8> { Ok(0) }
-    fn read_regs(&self, reg: u8, data: &mut [u8]) -> AeroResult<()> { Ok(()) }
+    fn write_reg(&self, reg: u8, val: u8) -> VortexResult<()> { Ok(()) }
+    fn read_reg(&self, reg: u8) -> VortexResult<u8> { Ok(0) }
+    fn read_regs(&self, reg: u8, data: &mut [u8]) -> VortexResult<()> { Ok(()) }
 }
 
 /// LSM9DS1 - 9-axis IMU with magnetometer (Phones, Drones)
@@ -95,7 +95,7 @@ impl Lsm9ds1 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         // Configure accelerometer
         self.write_accel_reg(0x20, 0xC0)?;  // 952 Hz, ±16g
         // Configure gyroscope
@@ -107,7 +107,7 @@ impl Lsm9ds1 {
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<AdvancedImuData> {
+    pub fn read(&mut self) -> VortexResult<AdvancedImuData> {
         Ok(AdvancedImuData {
             accel_x: 0.0, accel_y: 0.0, accel_z: 9.81,
             gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,
@@ -118,8 +118,8 @@ impl Lsm9ds1 {
         })
     }
 
-    fn write_accel_reg(&self, reg: u8, val: u8) -> AeroResult<()> { Ok(()) }
-    fn write_mag_reg(&self, reg: u8, val: u8) -> AeroResult<()> { Ok(()) }
+    fn write_accel_reg(&self, reg: u8, val: u8) -> VortexResult<()> { Ok(()) }
+    fn write_mag_reg(&self, reg: u8, val: u8) -> VortexResult<()> { Ok(()) }
 }
 
 /// ICM20948 - 9-axis IMU + Magnetometer + Temperature (Drones)
@@ -138,7 +138,7 @@ impl Icm20948 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         // Reset
         self.write_reg(0x06, 0x80)?;
         // User bank 0
@@ -150,7 +150,7 @@ impl Icm20948 {
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<AdvancedImuData> {
+    pub fn read(&mut self) -> VortexResult<AdvancedImuData> {
         Ok(AdvancedImuData {
             accel_x: 0.0, accel_y: 0.0, accel_z: 9.81,
             gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,
@@ -161,7 +161,7 @@ impl Icm20948 {
         })
     }
 
-    fn write_reg(&self, reg: u8, val: u8) -> AeroResult<()> { Ok(()) }
+    fn write_reg(&self, reg: u8, val: u8) -> VortexResult<()> { Ok(()) }
 }
 
 /// BNO055 - Absolute Orientation Sensor (Fully calibrated)
@@ -180,7 +180,7 @@ impl Bno055 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         // Reset
         self.write_reg(0x3F, 0x20)?;
         // Set operation mode to IMU
@@ -190,22 +190,22 @@ impl Bno055 {
         Ok(())
     }
 
-    pub fn read_euler(&mut self) -> AeroResult<(f32, f32, f32)> {
+    pub fn read_euler(&mut self) -> VortexResult<(f32, f32, f32)> {
         // Read Euler angles (heading, roll, pitch)
         Ok((0.0, 0.0, 0.0))
     }
 
-    pub fn read_quaternion(&mut self) -> AeroResult<(f32, f32, f32, f32)> {
+    pub fn read_quaternion(&mut self) -> VortexResult<(f32, f32, f32, f32)> {
         // Read quaternion
         Ok((1.0, 0.0, 0.0, 0.0))
     }
 
-    pub fn get_calibration_status(&mut self) -> AeroResult<(u8, u8, u8, u8)> {
+    pub fn get_calibration_status(&mut self) -> VortexResult<(u8, u8, u8, u8)> {
         // Returns (sys, gyro, accel, mag) calibration status 0-3
         Ok((3, 3, 3, 3))
     }
 
-    fn write_reg(&self, reg: u8, val: u8) -> AeroResult<()> { Ok(()) }
+    fn write_reg(&self, reg: u8, val: u8) -> VortexResult<()> { Ok(()) }
 }
 
 /// VN-300 - Industrial IMU/AHRS
@@ -222,12 +222,12 @@ impl Vn300 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read_imu(&mut self) -> AeroResult<AdvancedImuData> {
+    pub fn read_imu(&mut self) -> VortexResult<AdvancedImuData> {
         Ok(AdvancedImuData {
             accel_x: 0.0, accel_y: 0.0, accel_z: 9.81,
             gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,

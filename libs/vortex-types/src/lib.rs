@@ -1,6 +1,6 @@
 #![no_std]
 
-//! Core types for Aero OS - Vehicle Control & Management
+//! Core types for Vortex OS - Vehicle Control & Management
 
 use core::fmt;
 
@@ -148,7 +148,7 @@ pub enum VehicleType {
 
 /// ============ ERRORS ============
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AeroError {
+pub enum VortexError {
     HardwareNotFound,
     CommunicationError,
     CalibrationError,
@@ -163,24 +163,24 @@ pub enum AeroError {
     Unknown,
 }
 
-impl fmt::Display for AeroError {
+impl fmt::Display for VortexError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            AeroError::HardwareNotFound => write!(f, "Hardware not found"),
-            AeroError::CommunicationError => write!(f, "Communication error"),
-            AeroError::CalibrationError => write!(f, "Calibration error"),
-            AeroError::SensorError => write!(f, "Sensor error"),
-            AeroError::MotorError => write!(f, "Motor error"),
-            AeroError::BatteryError => write!(f, "Battery error"),
-            AeroError::MemoryError => write!(f, "Memory error"),
-            AeroError::Timeout => write!(f, "Timeout"),
-            AeroError::InvalidParameter => write!(f, "Invalid parameter"),
-            AeroError::NotInitialized => write!(f, "Not initialized"),
-            AeroError::AlreadyInitialized => write!(f, "Already initialized"),
-            AeroError::Unknown => write!(f, "Unknown error"),
+            VortexError::HardwareNotFound => write!(f, "Hardware not found"),
+            VortexError::CommunicationError => write!(f, "Communication error"),
+            VortexError::CalibrationError => write!(f, "Calibration error"),
+            VortexError::SensorError => write!(f, "Sensor error"),
+            VortexError::MotorError => write!(f, "Motor error"),
+            VortexError::BatteryError => write!(f, "Battery error"),
+            VortexError::MemoryError => write!(f, "Memory error"),
+            VortexError::Timeout => write!(f, "Timeout"),
+            VortexError::InvalidParameter => write!(f, "Invalid parameter"),
+            VortexError::NotInitialized => write!(f, "Not initialized"),
+            VortexError::AlreadyInitialized => write!(f, "Already initialized"),
+            VortexError::Unknown => write!(f, "Unknown error"),
         }
     }
 }
 
 /// Result type alias
-pub type AeroResult<T> = Result<T, AeroError>;
+pub type VortexResult<T> = Result<T, VortexError>;

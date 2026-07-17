@@ -1,7 +1,7 @@
 //! Environmental & Environmental Sensors
 //! Air quality, humidity, gas sensors, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// BME688 - 4-in-1 Environmental Sensor (Enhanced)
 pub struct Bme688Enhanced {
@@ -17,12 +17,12 @@ impl Bme688Enhanced {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read_all(&self) -> AeroResult<(f32, f32, f32, u16)> {
+    pub fn read_all(&self) -> VortexResult<(f32, f32, f32, u16)> {
         // (temperature, humidity, pressure, gas_resistance)
         Ok((25.0, 50.0, 101325.0, 10000))
     }
@@ -42,12 +42,12 @@ impl Ccs811 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read_voc(&self) -> AeroResult<u16> {
+    pub fn read_voc(&self) -> VortexResult<u16> {
         Ok(400)  // eCO2 in ppm
     }
 }
@@ -66,12 +66,12 @@ impl Mq135 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read_ppm(&self) -> AeroResult<f32> {
+    pub fn read_ppm(&self) -> VortexResult<f32> {
         Ok(400.0)
     }
 }
@@ -90,12 +90,12 @@ impl Scd30 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&self) -> AeroResult<(f32, f32, f32)> {
+    pub fn read(&self) -> VortexResult<(f32, f32, f32)> {
         // (co2_ppm, temperature, humidity)
         Ok((400.0, 25.0, 50.0))
     }

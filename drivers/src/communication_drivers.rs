@@ -1,7 +1,7 @@
 //! Communication Drivers
 //! WiFi, Bluetooth, CAN, LoRa, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// WiFi Module (ESP8266, ESP32)
 pub struct WifiModule {
@@ -19,16 +19,16 @@ impl WifiModule {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> { Ok(()) }
+    pub fn init(&mut self) -> VortexResult<()> { Ok(()) }
 
-    pub fn connect_to_ssid(&mut self, ssid: &str, password: &str) -> AeroResult<()> {
+    pub fn connect_to_ssid(&mut self, ssid: &str, password: &str) -> VortexResult<()> {
         // AT+CWJAP="SSID","PASSWORD"
         self.connected = true;
         Ok(())
     }
 
-    pub fn send_data(&self, data: &[u8]) -> AeroResult<()> { Ok(()) }
-    pub fn receive_data(&self, buf: &mut [u8]) -> AeroResult<usize> { Ok(0) }
+    pub fn send_data(&self, data: &[u8]) -> VortexResult<()> { Ok(()) }
+    pub fn receive_data(&self, buf: &mut [u8]) -> VortexResult<usize> { Ok(0) }
 }
 
 /// Bluetooth Module (HC-05, HC-06)
@@ -45,9 +45,9 @@ impl BluetoothModule {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> { Ok(()) }
-    pub fn send_data(&self, data: &[u8]) -> AeroResult<()> { Ok(()) }
-    pub fn receive_data(&self, buf: &mut [u8]) -> AeroResult<usize> { Ok(0) }
+    pub fn init(&mut self) -> VortexResult<()> { Ok(()) }
+    pub fn send_data(&self, data: &[u8]) -> VortexResult<()> { Ok(()) }
+    pub fn receive_data(&self, buf: &mut [u8]) -> VortexResult<usize> { Ok(0) }
 }
 
 /// CAN Bus Interface
@@ -61,10 +61,10 @@ impl CanBus {
         Self { port, baudrate }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> { Ok(()) }
+    pub fn init(&mut self) -> VortexResult<()> { Ok(()) }
 
-    pub fn send_message(&self, id: u32, data: &[u8]) -> AeroResult<()> { Ok(()) }
-    pub fn receive_message(&self, id: &mut u32, data: &mut [u8]) -> AeroResult<usize> { Ok(0) }
+    pub fn send_message(&self, id: u32, data: &[u8]) -> VortexResult<()> { Ok(()) }
+    pub fn receive_message(&self, id: &mut u32, data: &mut [u8]) -> VortexResult<usize> { Ok(0) }
 }
 
 /// LoRa Module (RFM95W, SX1278)
@@ -81,7 +81,7 @@ impl LoraModule {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> { Ok(()) }
-    pub fn send(&self, data: &[u8]) -> AeroResult<()> { Ok(()) }
-    pub fn receive(&self, buf: &mut [u8]) -> AeroResult<usize> { Ok(0) }
+    pub fn init(&mut self) -> VortexResult<()> { Ok(()) }
+    pub fn send(&self, data: &[u8]) -> VortexResult<()> { Ok(()) }
+    pub fn receive(&self, buf: &mut [u8]) -> VortexResult<usize> { Ok(0) }
 }

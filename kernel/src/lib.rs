@@ -1,4 +1,4 @@
-//! Aero Microkernel - Real-time OS for Drones, Cars, and Robots
+//! Vortex Microkernel - Real-time OS for Drones, Cars, and Robots
 //! 
 //! Core Features:
 //! - O(1) Real-time Scheduler with 32 priority levels
@@ -19,10 +19,10 @@ pub mod interrupt;
 pub mod sync;
 pub mod task;
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// Initialize the microkernel
-pub fn init() -> AeroResult<()> {
+pub fn init() -> VortexResult<()> {
     memory::init()?;
     scheduler::init()?;
     interrupt::init()?;

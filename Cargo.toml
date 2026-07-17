@@ -1,21 +1,21 @@
 [workspace]
-members = ["boot","kernel","drivers","services","runtime","libs/aero-abi","libs/aero-types"]
+members = ["boot","kernel","drivers","services","runtime","libs/vortex-abi","libs/vortex-types"]
 resolver = "2"
 
 [workspace.package]
 version = "0.3.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-authors = ["Aero Team"]
-repository = "https://github.com/aero-os/aero"
+authors = ["Vortex Team"]
+repository = "https://github.com/vortex-os/vortex"
 
 [workspace.dependencies]
 bitflags = "2.6"
 spin = "0.10"
 linked_list_allocator = "0.10.6"
 heapless = { version = "0.8", features = ["serde"] }
-aero-types = { path = "libs/aero-types" }
-aero-abi = { path = "libs/aero-abi" }
+vortex-types = { path = "libs/vortex-types" }
+vortex-abi = { path = "libs/vortex-abi" }
 postcard = { version = "1.1", default-features = false, features = ["alloc"] }
 
 [profile.dev]

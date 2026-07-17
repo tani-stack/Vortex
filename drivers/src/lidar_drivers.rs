@@ -1,7 +1,7 @@
 //! LiDAR and Range Sensor Drivers
 //! Velodyne, Sick, Livox, TeraRanger, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 #[derive(Debug, Clone, Copy)]
 pub struct RangeSensorData {
@@ -32,7 +32,7 @@ impl VelodyneVlp16 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         Ok(())
     }
 
@@ -55,12 +55,12 @@ impl SickS300 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read_scan(&mut self) -> AeroResult<[RangeSensorData; 541]> {
+    pub fn read_scan(&mut self) -> VortexResult<[RangeSensorData; 541]> {
         Ok([RangeSensorData {
             distance_mm: 5000,
             signal_strength: 100,
@@ -83,12 +83,12 @@ impl LivoxMid360 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn get_cloud(&self) -> AeroResult<Vec<LidarPoint>> {
+    pub fn get_cloud(&self) -> VortexResult<Vec<LidarPoint>> {
         Ok(Vec::new())
     }
 }
@@ -107,12 +107,12 @@ impl Vl53l0x {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<RangeSensorData> {
+    pub fn read(&mut self) -> VortexResult<RangeSensorData> {
         Ok(RangeSensorData {
             distance_mm: 500,
             signal_strength: 100,

@@ -1,7 +1,7 @@
 //! Camera Drivers
 //! OV5640, OV7670, MT9D111, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Frame {
@@ -37,21 +37,21 @@ impl Ov5640 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         // Load OV5640 initialization sequence
         self.write_reg_seq()?;
         self.initialized = true;
         Ok(())
     }
 
-    pub fn set_resolution(&mut self, width: u16, height: u16) -> AeroResult<()> {
+    pub fn set_resolution(&mut self, width: u16, height: u16) -> VortexResult<()> {
         self.resolution = (width, height);
         Ok(())
     }
 
-    pub fn capture(&mut self) -> AeroResult<Frame> {
+    pub fn capture(&mut self) -> VortexResult<Frame> {
         if !self.initialized {
-            return Err(aero_types::AeroError::HardwareError);
+            return Err(vortex_types::VortexError::HardwareError);
         }
         Ok(Frame {
             width: self.resolution.0,
@@ -61,7 +61,7 @@ impl Ov5640 {
         })
     }
 
-    fn write_reg_seq(&self) -> AeroResult<()> { Ok(()) }
+    fn write_reg_seq(&self) -> VortexResult<()> { Ok(()) }
 }
 
 /// OV7670 Camera Module (VGA, compact)
@@ -78,12 +78,12 @@ impl Ov7670 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn capture(&mut self) -> AeroResult<Frame> {
+    pub fn capture(&mut self) -> VortexResult<Frame> {
         Ok(Frame {
             width: 640,
             height: 480,
@@ -107,12 +107,12 @@ impl Mt9d111 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn capture(&mut self) -> AeroResult<Frame> {
+    pub fn capture(&mut self) -> VortexResult<Frame> {
         Ok(Frame {
             width: 1600,
             height: 1200,

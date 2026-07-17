@@ -1,7 +1,7 @@
 //! IMU Drivers - Complete Implementation
 //! ICM42688, MPU9250, BMI160, LSM6DSL, etc.
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// IMU Data structure (6-axis + temperature)
 #[derive(Debug, Clone, Copy)]
@@ -30,7 +30,7 @@ impl Icm42688 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         // Reset device
         self.write_reg(0x6B, 0x80)?;  // PWR_MGMT_1: reset
         // Wait for reset
@@ -46,9 +46,9 @@ impl Icm42688 {
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<ImuData> {
+    pub fn read(&mut self) -> VortexResult<ImuData> {
         if !self.initialized {
-            return Err(aero_types::AeroError::HardwareError);
+            return Err(vortex_types::VortexError::HardwareError);
         }
 
         let mut data = [0u8; 14];
@@ -70,12 +70,12 @@ impl Icm42688 {
         })
     }
 
-    fn write_reg(&self, reg: u8, val: u8) -> AeroResult<()> {
+    fn write_reg(&self, reg: u8, val: u8) -> VortexResult<()> {
         // I2C write implementation
         Ok(())
     }
 
-    fn read_regs(&self, reg: u8, data: &mut [u8]) -> AeroResult<()> {
+    fn read_regs(&self, reg: u8, data: &mut [u8]) -> VortexResult<()> {
         // I2C read implementation
         Ok(())
     }
@@ -103,12 +103,12 @@ impl Mpu9250 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<Mpu9250Data> {
+    pub fn read(&mut self) -> VortexResult<Mpu9250Data> {
         Ok(Mpu9250Data {
             imu: ImuData {
                 accel_x: 0.0, accel_y: 0.0, accel_z: 9.81,
@@ -135,12 +135,12 @@ impl Bmi160 {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         self.initialized = true;
         Ok(())
     }
 
-    pub fn read(&mut self) -> AeroResult<ImuData> {
+    pub fn read(&mut self) -> VortexResult<ImuData> {
         Ok(ImuData {
             accel_x: 0.0, accel_y: 0.0, accel_z: 9.81,
             gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,

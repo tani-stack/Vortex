@@ -1,7 +1,7 @@
 //! Wheel Encoder Drivers
 //! Odometry for robots and cars
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// Rotary Encoder (incremental)
 pub struct RotaryEncoder {
@@ -19,7 +19,7 @@ impl RotaryEncoder {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         Ok(())
     }
 
@@ -48,15 +48,15 @@ impl WheelSpeedSensor {
         }
     }
 
-    pub fn init(&mut self) -> AeroResult<()> {
+    pub fn init(&mut self) -> VortexResult<()> {
         Ok(())
     }
 
-    pub fn read_speed(&self) -> AeroResult<f32> {
+    pub fn read_speed(&self) -> VortexResult<f32> {
         Ok(0.0)  // m/s
     }
 
-    pub fn read_distance(&self) -> AeroResult<f32> {
+    pub fn read_distance(&self) -> VortexResult<f32> {
         Ok(0.0)  // meters
     }
 }

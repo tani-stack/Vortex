@@ -67,8 +67,8 @@ impl AttitudeController {
     }
     pub fn run(
         &mut self,
-        t: aero_types::Quaternion,
-        c: aero_types::Quaternion,
+        t: vortex_types::Quaternion,
+        c: vortex_types::Quaternion,
         g: [f32; 3],
         dt: f32,
     ) -> [f32; 3] {

@@ -3,7 +3,7 @@
 //! Provides mutex, semaphore, and barrier implementations
 
 use alloc::collections::VecDeque;
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 use crate::task::TaskId;
 
 /// Spinlock - Simple lock with busy waiting
@@ -73,7 +73,7 @@ impl Mutex {
     }
 
     /// Lock the mutex
-    pub fn lock(&mut self, task_id: TaskId) -> AeroResult<()> {
+    pub fn lock(&mut self, task_id: TaskId) -> VortexResult<()> {
         if self.holder == Some(task_id) {
             self.count += 1;
             return Ok(());
@@ -85,12 +85,12 @@ impl Mutex {
             Ok(())
         } else {
             self.waiters.push_back(task_id);
-            Err(aero_types::AeroError::MutexLocked)
+            Err(vortex_types::VortexError::MutexLocked)
         }
     }
 
     /// Try to lock (non-blocking)
-    pub fn try_lock(&mut self, task_id: TaskId) -> AeroResult<bool> {
+    pub fn try_lock(&mut self, task_id: TaskId) -> VortexResult<bool> {
         if self.holder == Some(task_id) {
             self.count += 1;
             Ok(true)
@@ -104,7 +104,7 @@ impl Mutex {
     }
 
     /// Unlock the mutex
-    pub fn unlock(&mut self) -> AeroResult<()> {
+    pub fn unlock(&mut self) -> VortexResult<()> {
         if self.count > 1 {
             self.count -= 1;
             return Ok(());
@@ -120,7 +120,7 @@ impl Mutex {
             }
             Ok(())
         } else {
-            Err(aero_types::AeroError::OperationFailed)
+            Err(vortex_types::VortexError::OperationFailed)
         }
     }
 
@@ -159,23 +159,23 @@ impl Semaphore {
     }
 
     /// Signal (increment)
-    pub fn signal(&mut self) -> AeroResult<()> {
+    pub fn signal(&mut self) -> VortexResult<()> {
         if self.count < u32::MAX {
             self.count += 1;
             Ok(())
         } else {
-            Err(aero_types::AeroError::OperationFailed)
+            Err(vortex_types::VortexError::OperationFailed)
         }
     }
 
     /// Wait (decrement if available)
-    pub fn wait(&mut self, task_id: TaskId) -> AeroResult<()> {
+    pub fn wait(&mut self, task_id: TaskId) -> VortexResult<()> {
         if self.count > 0 {
             self.count -= 1;
             Ok(())
         } else {
             self.waiters.push_back(task_id);
-            Err(aero_types::AeroError::WouldBlock)
+            Err(vortex_types::VortexError::WouldBlock)
         }
     }
 
@@ -222,7 +222,7 @@ impl Barrier {
     }
 
     /// Wait at barrier
-    pub fn wait(&mut self, task_id: TaskId) -> AeroResult<bool> {
+    pub fn wait(&mut self, task_id: TaskId) -> VortexResult<bool> {
         self.current += 1;
         
         if self.current >= self.total {
@@ -231,7 +231,7 @@ impl Barrier {
             Ok(true)
         } else {
             self.waiters.push_back(task_id);
-            Err(aero_types::AeroError::WouldBlock)
+            Err(vortex_types::VortexError::WouldBlock)
         }
     }
 
@@ -270,44 +270,44 @@ impl RwLock {
     }
 
     /// Read lock
-    pub fn read_lock(&mut self, task_id: TaskId) -> AeroResult<()> {
+    pub fn read_lock(&mut self, task_id: TaskId) -> VortexResult<()> {
         if self.writer.is_none() && self.waiting_writers.is_empty() {
             self.readers += 1;
             Ok(())
         } else {
             self.waiting_readers.push_back(task_id);
-            Err(aero_types::AeroError::WouldBlock)
+            Err(vortex_types::VortexError::WouldBlock)
         }
     }
 
     /// Write lock
-    pub fn write_lock(&mut self, task_id: TaskId) -> AeroResult<()> {
+    pub fn write_lock(&mut self, task_id: TaskId) -> VortexResult<()> {
         if self.writer.is_none() && self.readers == 0 {
             self.writer = Some(task_id);
             Ok(())
         } else {
             self.waiting_writers.push_back(task_id);
-            Err(aero_types::AeroError::WouldBlock)
+            Err(vortex_types::VortexError::WouldBlock)
         }
     }
 
     /// Read unlock
-    pub fn read_unlock(&mut self) -> AeroResult<()> {
+    pub fn read_unlock(&mut self) -> VortexResult<()> {
         if self.readers > 0 {
             self.readers -= 1;
             Ok(())
         } else {
-            Err(aero_types::AeroError::OperationFailed)
+            Err(vortex_types::VortexError::OperationFailed)
         }
     }
 
     /// Write unlock
-    pub fn write_unlock(&mut self) -> AeroResult<()> {
+    pub fn write_unlock(&mut self) -> VortexResult<()> {
         if self.writer.is_some() {
             self.writer = None;
             Ok(())
         } else {
-            Err(aero_types::AeroError::OperationFailed)
+            Err(vortex_types::VortexError::OperationFailed)
         }
     }
 }
