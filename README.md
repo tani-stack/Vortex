@@ -340,3 +340,6 @@ Choose the license that best fits your project.
 **VORTEX OS v3** — *One kernel. Many vehicles. Real-time performance.*
 
 Built with ❤️ in Rust for autonomous systems that matter.
+
+## 🛡️ Stability
+Continuous Integration is now optimized for faster builds and better reliability.
