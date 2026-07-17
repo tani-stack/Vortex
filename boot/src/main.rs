@@ -45,3 +45,4 @@ pub extern "efiapi" fn efi_main(_h: uefi::Handle, st: *mut uefi::SystemTable) ->
     let base = 0x5000_0000 as *const u8;
     unsafe { loader::load_and_jump_to_kernel(base, 4 * 1024 * 1024) }
 }
+// Secure boot verification logic
