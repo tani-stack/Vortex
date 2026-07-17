@@ -2,11 +2,10 @@
 name = "aero-kernel"
 version.workspace = true
 edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
 aero-types = { workspace = true }
-aero-abi = { workspace = true }
 spin = { workspace = true }
 linked_list_allocator = { workspace = true }
-heapless = { workspace = true }
-bitflags = { workspace = true }

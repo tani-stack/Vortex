@@ -1,42 +1,35 @@
+//! Aero Microkernel - Real-time OS for Drones, Cars, and Robots
+//! 
+//! Core Features:
+//! - O(1) Real-time Scheduler with 32 priority levels
+//! - Pre-emptive scheduling with priority inversion prevention
+//! - Lightweight IPC with message passing
+//! - Virtual memory and protection domains
+//! - Interrupt handling and routing
+
 #![no_std]
-#![feature(abi_x86_interrupt)]
+#![warn(missing_docs)]
 
 extern crate alloc;
 
-pub mod gdt;
-pub mod idt;
+pub mod scheduler;
+pub mod memory;
 pub mod ipc;
-pub mod mem;
-pub mod sched;
+pub mod interrupt;
 pub mod sync;
+pub mod task;
 
-use linked_list_allocator::LockedHeap;
+use aero_types::AeroResult;
 
-#[global_allocator]
-static ALLOC: LockedHeap = LockedHeap::empty();
-
-pub fn init() {
-    gdt::init();
-    idt::init();
-    mem::init_frame_allocator();
-    unsafe {
-        ALLOC.lock().init(0x4400_0000 as *mut u8, 16 * 1024 * 1024);
-    }
-    sched::init();
-    ipc::init();
+/// Initialize the microkernel
+pub fn init() -> AeroResult<()> {
+    memory::init()?;
+    scheduler::init()?;
+    interrupt::init()?;
+    Ok(())
 }
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    init();
-    loop {
-        core::hint::spin_loop();
-    }
-}
-
-#[panic_handler]
-fn panic(_info: &core::panic::PanicInfo) -> ! {
-    loop {
-        core::hint::spin_loop();
-    }
+/// Start the kernel scheduler (doesn't return)
+pub fn start() -> ! {
+    scheduler::start()
 }
