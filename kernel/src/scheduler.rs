@@ -249,4 +249,4 @@ pub fn start() -> ! {
     loop {
         core::hint::spin_loop();
     }
-}
+}// Real-time scheduler core implementation
