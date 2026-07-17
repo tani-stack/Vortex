@@ -1,4 +1,4 @@
-use aero_types::Celsius;
+use vortex_types::Celsius;
 
 #[derive(Clone, Copy, Debug)]
 pub struct ImuData {

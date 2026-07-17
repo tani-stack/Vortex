@@ -40,7 +40,7 @@ impl TpmDevice for SpiTpm {
     }
     fn read_signed_manifest(&mut self) -> Result<SignedManifest, TpmError> {
         Ok(SignedManifest {
-            product_id: *b"AERO-RUST-PROD-KEY-V2-0000000000",
+            product_id: *b"VORTEX-RUST-PROD-KEY-V2-000000",
             version: 2,
             signature: [0; 64],
         })

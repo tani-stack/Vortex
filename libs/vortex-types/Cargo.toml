@@ -1,7 +1,6 @@
 [package]
-name = "vortex-boot"
+name = "vortex-types"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-vortex-types = { workspace = true }

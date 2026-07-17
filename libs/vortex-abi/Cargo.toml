@@ -1,9 +1,7 @@
 [package]
-name = "vortex-services"
+name = "vortex-abi"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
 vortex-types = { workspace = true }
-vortex-drivers = { path = "../drivers" }
-heapless = { workspace = true }

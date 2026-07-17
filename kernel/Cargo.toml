@@ -1,11 +1,11 @@
 [package]
-name = "aero-kernel"
+name = "vortex-kernel"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
 
 [dependencies]
-aero-types = { workspace = true }
+vortex-types = { workspace = true }
 spin = { workspace = true }
 linked_list_allocator = { workspace = true }

@@ -2,7 +2,7 @@
 //! 
 //! Provides virtual memory, page tables, and protection domains
 
-use aero_types::AeroResult;
+use vortex_types::VortexResult;
 
 /// Page size (4KB for ARM)
 pub const PAGE_SIZE: usize = 4096;
@@ -112,73 +112,6 @@ impl PageTable {
         }
         
         let phys_addr = entry & 0xFFFFF000;
-        Some(PhysicalAddress(phys_addr | (virt.0 & 0xFFF)))
-    }
-}
-
-impl Default for PageTable {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-/// Memory manager
-pub struct MemoryManager {
-    /// Kernel page table
-    kernel_page_table: PageTable,
-    /// Free frame stack
-    free_frames: alloc::vec::Vec<PhysicalAddress>,
-}
-
-impl MemoryManager {
-    /// Create a new memory manager
-    pub fn new() -> Self {
-        Self {
-            kernel_page_table: PageTable::new(),
-            free_frames: alloc::vec::Vec::new(),
-        }
-    }
-
-    /// Allocate a physical frame
-    pub fn alloc_frame(&mut self) -> Option<PhysicalAddress> {
-        self.free_frames.pop()
-    }
-
-    /// Free a physical frame
-    pub fn free_frame(&mut self, frame: PhysicalAddress) {
-        self.free_frames.push(frame);
-    }
-
-    /// Create a new address space (for a new task)
-    pub fn create_address_space(&self) -> PageTable {
-        PageTable::new()
-    }
-
-    /// Enable paging on a page table
-    pub fn enable_paging(&self, _page_table: &PageTable) {
-        // Platform-specific: write page table address to MMU register
-    }
-}
-
-impl Default for MemoryManager {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-static mut MEMORY_MANAGER: Option<MemoryManager> = None;
-
-/// Initialize memory manager
-pub fn init() -> AeroResult<()> {
-    unsafe {
-        MEMORY_MANAGER = Some(MemoryManager::new());
-    }
-    Ok(())
-}
-
-/// Get memory manager
-pub fn memory_manager() -> &'static mut MemoryManager {
-    unsafe {
-        MEMORY_MANAGER.as_mut().expect("Memory manager not initialized")
+        Some(PhysicalAddress(phys_addr))
     }
 }

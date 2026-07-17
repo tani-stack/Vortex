@@ -1,9 +1,9 @@
 [package]
-name = "aero-runtime"
+name = "vortex-runtime"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-aero-types = { workspace = true }
+vortex-types = { workspace = true }
 heapless = { workspace = true }
 spin = { workspace = true }

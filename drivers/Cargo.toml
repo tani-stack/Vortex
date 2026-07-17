@@ -1,8 +1,8 @@
 [package]
-name = "aero-drivers"
+name = "vortex-drivers"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-aero-types = { workspace = true }
+vortex-types = { workspace = true }
 bitflags = { workspace = true }

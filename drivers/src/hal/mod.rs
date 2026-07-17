@@ -1,4 +1,4 @@
-//! Hardware Abstraction Layer for Aero OS
+//! Hardware Abstraction Layer for VORTEX OS
 //! Provides platform-independent hardware interfaces
 
 pub mod gpio;

@@ -9,7 +9,7 @@ mod uefi;
 use core::panic::PanicInfo;
 use tpm::{SpiTpm, TpmDevice};
 
-const EXPECTED: [u8; 32] = *b"AERO-RUST-PROD-KEY-V2-0000000000";
+const EXPECTED: [u8; 32] = *b"VORTEX-RUST-PROD-KEY-V2-000000";
 
 #[panic_handler]
 fn panic(_: &PanicInfo) -> ! {
