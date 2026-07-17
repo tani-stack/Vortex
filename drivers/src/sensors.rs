@@ -260,3 +260,4 @@ impl Sensor for GenericBarometer {
     }
     fn set_sample_rate(&mut self, _hz: u32) -> AeroResult<()> { Ok(()) }
 }
+// Universal sensor abstraction layer
