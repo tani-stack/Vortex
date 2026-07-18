@@ -1,67 +1,67 @@
-//! SPI (Serial Peripheral Interface) Hardware Abstraction
+//! SPI (Serial Peripheral Interface) Master abstraction
 
 use vortex_types::VortexResult;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SPIMode {
-    Mode0,
-    Mode1,
-    Mode2,
-    Mode3,
+/// SPI Master trait
+pub trait SpiMaster: Send + Sync {
+    fn configure(&mut self, frequency_hz: u32, mode: u8) -> VortexResult<()>;
+    fn write(&mut self, data: &[u8]) -> VortexResult<()>;
+    fn read(&mut self, buffer: &mut [u8]) -> VortexResult<()>;
+    fn write_read(&mut self, write_data: &[u8], read_buffer: &mut [u8]) -> VortexResult<()>;
 }
 
-pub struct SPIMaster {
-    bus: u8,
-    speed_hz: u32,
-    mode: SPIMode,
+/// ARM64 SPI0 implementation
+pub struct Arm64Spi0 {
+    frequency_hz: u32,
+    initialized: bool,
 }
 
-impl SPIMaster {
-    pub fn new(bus: u8, speed_hz: u32, mode: SPIMode) -> VortexResult<Self> {
-        Self::init_spi(bus, speed_hz, mode)?;
-        Ok(Self { bus, speed_hz, mode })
-    }
-
-    pub fn transfer(&self, write_buf: &[u8], read_buf: &mut [u8]) -> VortexResult<usize> {
-        Self::spi_transfer(self.bus, write_buf, read_buf)
-    }
-
-    pub fn write(&self, data: &[u8]) -> VortexResult<()> {
-        let mut dummy = [0u8; 256];
-        let read_size = data.len().min(256);
-        Self::spi_transfer(self.bus, data, &mut dummy[..read_size])?;
-        Ok(())
-    }
-
-    pub fn read(&self, buf: &mut [u8]) -> VortexResult<usize> {
-        let dummy = [0u8; 256];
-        let read_size = buf.len().min(256);
-        Self::spi_transfer(self.bus, &dummy[..read_size], &mut buf[..read_size])
-    }
-
-    pub fn set_speed(&mut self, speed_hz: u32) -> VortexResult<()> {
-        Self::spi_set_speed(self.bus, speed_hz)?;
-        self.speed_hz = speed_hz;
-        Ok(())
-    }
-
-    #[inline(always)]
-    fn init_spi(bus: u8, _speed_hz: u32, _mode: SPIMode) -> VortexResult<()> {
-        let _ = bus;
-        Ok(())
-    }
-
-    #[inline(always)]
-    fn spi_transfer(bus: u8, _write_buf: &[u8], _read_buf: &mut [u8]) -> VortexResult<usize> {
-        let _ = bus;
-        Ok(0)
-    }
-
-    #[inline(always)]
-    fn spi_set_speed(bus: u8, _speed: u32) -> VortexResult<()> {
-        let _ = bus;
-        Ok(())
+impl Arm64Spi0 {
+    pub fn new() -> Self {
+        Self {
+            frequency_hz: 1_000_000,
+            initialized: false,
+        }
     }
 }
 
-pub fn init() {}
+impl SpiMaster for Arm64Spi0 {
+    fn configure(&mut self, frequency_hz: u32, _mode: u8) -> VortexResult<()> {
+        self.frequency_hz = frequency_hz;
+        self.initialized = true;
+        // On real hardware, would configure SPI clock divider here
+        Ok(())
+    }
+
+    fn write(&mut self, data: &[u8]) -> VortexResult<()> {
+        if !self.initialized {
+            return Err(vortex_types::VortexError::HardwareError);
+        }
+        // Write bytes to SPI FIFO
+        for _byte in data {
+            // Simulate SPI write
+        }
+        Ok(())
+    }
+
+    fn read(&mut self, buffer: &mut [u8]) -> VortexResult<()> {
+        if !self.initialized {
+            return Err(vortex_types::VortexError::HardwareError);
+        }
+        // Read bytes from SPI FIFO
+        for entry in buffer.iter_mut() {
+            *entry = 0;  // Simulate SPI read
+        }
+        Ok(())
+    }
+
+    fn write_read(&mut self, write_data: &[u8], read_buffer: &mut [u8]) -> VortexResult<()> {
+        self.write(write_data)?;
+        self.read(read_buffer)?;
+        Ok(())
+    }
+}
+
+pub fn init() -> VortexResult<()> {
+    Ok(())
+}

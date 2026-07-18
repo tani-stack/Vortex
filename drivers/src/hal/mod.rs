@@ -1,22 +1,26 @@
-//! Hardware Abstraction Layer for VORTEX OS
-//! Provides platform-independent hardware interfaces
+//! Hardware Abstraction Layer (HAL)
+//! Trait-based interface for hardware operations
+//! Supports GPIO, UART, I2C, SPI, PWM, ADC, Timers
 
 pub mod gpio;
+pub mod uart;
+pub mod i2c;
+pub mod spi;
 pub mod pwm;
 pub mod adc;
-pub mod uart;
-pub mod spi;
-pub mod i2c;
 pub mod timer;
-pub mod interrupt;
+pub mod mmio;
 
-/// Initialize HAL for the target platform
-pub fn init() {
-    gpio::init();
-    timer::init();
-    uart::init();
-    spi::init();
-    i2c::init();
-    adc::init();
-    interrupt::init();
+use vortex_types::VortexResult;
+
+/// Initialize all HAL modules
+pub fn init() -> VortexResult<()> {
+    gpio::init()?;
+    uart::init()?;
+    i2c::init()?;
+    spi::init()?;
+    pwm::init()?;
+    adc::init()?;
+    timer::init()?;
+    Ok(())
 }

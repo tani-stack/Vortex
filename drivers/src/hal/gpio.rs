@@ -1,90 +1,81 @@
-//! GPIO (General Purpose Input/Output) Hardware Abstraction
+//! GPIO (General Purpose Input/Output) abstraction
 
-use vortex_types::{VortexError, VortexResult};
+use vortex_types::VortexResult;
+use super::mmio;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum GPIOMode {
-    Input,
-    Output,
-    Alternate,
+/// GPIO Pin trait
+pub trait GpioPin: Send + Sync {
+    fn set_high(&mut self) -> VortexResult<()>;
+    fn set_low(&mut self) -> VortexResult<()>;
+    fn read(&self) -> VortexResult<bool>;
+    fn set_direction(&mut self, is_output: bool) -> VortexResult<()>;
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum GPIOLevel {
-    Low,
-    High,
+/// ARM64 GPIO implementation (QEMU/BCM2711)
+pub struct Arm64Gpio {
+    pin: u32,
+    is_output: bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PullMode {
-    NoPull,
-    PullUp,
-    PullDown,
-}
-
-pub struct GPIO {
-    pin: u8,
-    mode: GPIOMode,
-}
-
-impl GPIO {
-    pub fn new(pin: u8) -> Self {
+impl Arm64Gpio {
+    pub fn new(pin: u32) -> Self {
         Self {
             pin,
-            mode: GPIOMode::Input,
+            is_output: false,
         }
     }
 
-    pub fn set_mode(&mut self, mode: GPIOMode) -> VortexResult<()> {
-        self.mode = mode;
-        Self::configure_pin(self.pin, mode)?;
-        Ok(())
-    }
-
-    pub fn set_level(&self, level: GPIOLevel) -> VortexResult<()> {
-        if self.mode != GPIOMode::Output {
-            return Err(VortexError::InvalidParameter);
+    pub fn as_output(pin: u32) -> Self {
+        Self {
+            pin,
+            is_output: true,
         }
-        Self::write_pin(self.pin, level)?;
+    }
+
+    pub fn as_input(pin: u32) -> Self {
+        Self {
+            pin,
+            is_output: false,
+        }
+    }
+}
+
+impl GpioPin for Arm64Gpio {
+    fn set_high(&mut self) -> VortexResult<()> {
+        if !self.is_output {
+            return Err(vortex_types::VortexError::HardwareError);
+        }
+        let pin_offset = (self.pin / 32) * 4;
+        let bit = 1u32 << (self.pin % 32);
+        mmio::mmio_write(mmio::GPIO_BASE + pin_offset, bit);
         Ok(())
     }
 
-    pub fn get_level(&self) -> VortexResult<GPIOLevel> {
-        Self::read_pin(self.pin)
-    }
-
-    pub fn set_pull(&mut self, pull: PullMode) -> VortexResult<()> {
-        Self::configure_pull(self.pin, pull)?;
+    fn set_low(&mut self) -> VortexResult<()> {
+        if !self.is_output {
+            return Err(vortex_types::VortexError::HardwareError);
+        }
+        let pin_offset = (self.pin / 32) * 4 + 0x28;  // Clear register offset
+        let bit = 1u32 << (self.pin % 32);
+        mmio::mmio_write(mmio::GPIO_BASE + pin_offset, bit);
         Ok(())
     }
 
-    #[inline(always)]
-    fn configure_pin(pin: u8, mode: GPIOMode) -> VortexResult<()> {
-        let _ = pin;
-        let _ = mode;
-        Ok(())
+    fn read(&self) -> VortexResult<bool> {
+        let pin_offset = (self.pin / 32) * 4;
+        let bit = 1u32 << (self.pin % 32);
+        let value = mmio::mmio_read(mmio::GPIO_BASE + pin_offset);
+        Ok((value & bit) != 0)
     }
 
-    #[inline(always)]
-    fn write_pin(pin: u8, level: GPIOLevel) -> VortexResult<()> {
-        let _ = pin;
-        let _ = level;
-        Ok(())
-    }
-
-    #[inline(always)]
-    fn read_pin(pin: u8) -> VortexResult<GPIOLevel> {
-        let _ = pin;
-        Ok(GPIOLevel::Low)
-    }
-
-    #[inline(always)]
-    fn configure_pull(pin: u8, pull: PullMode) -> VortexResult<()> {
-        let _ = pin;
-        let _ = pull;
+    fn set_direction(&mut self, is_output: bool) -> VortexResult<()> {
+        self.is_output = is_output;
+        // On real hardware, would configure GPIO registers here
         Ok(())
     }
 }
 
-pub fn init() {}
-// Hardware Abstraction Layer for GPIO
+pub fn init() -> VortexResult<()> {
+    // Initialize GPIO subsystem
+    Ok(())
+}
